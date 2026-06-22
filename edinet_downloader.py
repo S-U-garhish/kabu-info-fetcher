@@ -33,7 +33,7 @@ CODE_LIST_URL = (
 )
 SUPPORTED_TYPES = {
     "120": "有価証券報告書",
-    "140": "四半期報告書",
+    "160": "半期報告書",
 }
 DOWNLOAD_TYPES = {
     "pdf": ("2", "pdfFlag"),
@@ -648,10 +648,16 @@ def load_or_fetch_list(
     return payload
 
 
-def is_target_document(document: dict[str, Any], companies: dict[str, Company]) -> bool:
+def is_target_document(
+    document: dict[str, Any],
+    companies: dict[str, Company],
+    allowed_types: frozenset[str] | None = None,
+) -> bool:
+    if allowed_types is None:
+        allowed_types = frozenset(SUPPORTED_TYPES)
     return (
         document.get("secCode") in companies
-        and document.get("docTypeCode") in SUPPORTED_TYPES
+        and document.get("docTypeCode") in allowed_types
         and document.get("withdrawalStatus") == "0"
         and document.get("disclosureStatus") == "0"
         and document.get("legalStatus") in {"1", "2"}
@@ -1017,6 +1023,7 @@ def run_download(args: argparse.Namespace) -> int:
     matched = 0
     downloaded = 0
 
+    allowed_types = frozenset(args.doc_types)
     for target_date in date_range(args.start, args.end):
         logging.info("一覧処理: %s", target_date)
         try:
@@ -1039,7 +1046,7 @@ def run_download(args: argparse.Namespace) -> int:
             continue
 
         for document in payload.get("results", []):
-            if not is_target_document(document, companies):
+            if not is_target_document(document, companies, allowed_types):
                 continue
             matched += 1
             company = companies[document["secCode"]]
@@ -1192,6 +1199,18 @@ def build_parser() -> argparse.ArgumentParser:
         choices=tuple(DOWNLOAD_TYPES),
         default=list(DOWNLOAD_TYPES),
     )
+    download.add_argument(
+        "--doc-types",
+        nargs="+",
+        choices=tuple(SUPPORTED_TYPES),
+        default=list(SUPPORTED_TYPES),
+        metavar="TYPE",
+        help=(
+            "取得する書類種別コード（複数可）。"
+            + "、".join(f"{k}={v}" for k, v in SUPPORTED_TYPES.items())
+            + "。デフォルトは全種別"
+        ),
+    )
     download.add_argument("--list-delay-min", type=float, default=1.0)
     download.add_argument("--list-delay-max", type=float, default=3.0)
     download.add_argument("--download-delay-min", type=float, default=3.0)
@@ -1224,6 +1243,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    sys.stderr.reconfigure(encoding='utf-8')
     load_env_file()
     parser = build_parser()
     args = parser.parse_args(argv)
