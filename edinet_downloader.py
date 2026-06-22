@@ -585,6 +585,9 @@ def process_edinet_attachments(
             for info in archive.infolist():
                 if info.is_dir() or not info.filename.lower().endswith(".pdf"):
                     continue
+                if "teikan" in Path(info.filename).stem.lower():
+                    logging.info("定款ファイルをスキップ: %s", info.filename)
+                    continue
                 pdf_data = archive.read(info)
                 text = extract_pdf_text(pdf_data)
                 notice_type = classify_notice(f"{info.filename}\n{text}")
