@@ -6,3 +6,4 @@ Edinetcode.zip
 __pycache__/
 *.pyc
 .test_*
+edinet_run.log
