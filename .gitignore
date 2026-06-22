@@ -1,0 +1,8 @@
+output/
+handoff/
+companies.csv
+Edinetcode.zip
+.env
+__pycache__/
+*.pyc
+.test_*

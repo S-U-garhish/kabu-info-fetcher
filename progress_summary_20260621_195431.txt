@@ -1,0 +1,33 @@
+EDINET handoff snapshot: 20260621_195431
+Created: 2026-06-21T20:44:52+09:00
+Source output: F:\work\edinet\output
+Company directories: 3641
+Deliverable files: 162952
+Deliverable size (uncompressed): 40.0 GiB
+Resume-state files included: 2092
+Cached EDINET list dates observed: 359
+
+Files by extension:
+  .csv: 10438
+  .gif: 7785
+  .htm: 62191
+  .jpg: 2737
+  .pdf: 6269
+  .png: 13716
+  .xbrl: 10438
+  .xml: 38940
+  .xsd: 10438
+
+Archives:
+  edinet_scripts_20260621_195431.zip
+  edinet_results_20260621_195431_part001.zip
+  edinet_results_20260621_195431_part002.zip
+  edinet_results_20260621_195431_part003.zip
+  edinet_results_20260621_195431_part004.zip
+  edinet_results_20260621_195431_part005.zip
+  edinet_results_20260621_195431_part006.zip
+  edinet_results_20260621_195431_part007.zip
+  edinet_results_20260621_195431_part008.zip
+  edinet_results_20260621_195431_part009.zip
+  edinet_results_20260621_195431_part010.zip
+  edinet_resume_state_20260621_195431.zip
