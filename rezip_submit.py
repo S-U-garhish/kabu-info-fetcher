@@ -14,10 +14,14 @@ companies = edinet_downloader.read_companies(csv_path)
 zip_path = submit / f"{csv_path.stem}.zip"
 backup_path = submit / f"{csv_path.stem}.orig.zip"
 
-# 既存ZIPをバックアップ
+# 既存ZIPをバックアップ（orig.zipが既にある場合は現行ZIPを削除）
 if zip_path.exists():
-    zip_path.rename(backup_path)
-    print(f"バックアップ: {backup_path}")
+    if backup_path.exists():
+        zip_path.unlink()
+        print(f"削除（バックアップ済み）: {zip_path}")
+    else:
+        zip_path.rename(backup_path)
+        print(f"バックアップ: {backup_path}")
 
 SKIP_NAMES = {".complete"}
 REZIP_SUFFIXES = ("_xbrl", "_csv")
@@ -56,6 +60,10 @@ with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as zf
         for suffix in REZIP_SUFFIXES:
             for xdir in sorted(folder.rglob(f"*{suffix}")):
                 if not xdir.is_dir():
+                    continue
+                # 親がすでにrezip対象ディレクトリの場合はスキップ（XBRL_TO_CSV等の誤マッチ防止）
+                parent_parts = [p.lower() for p in xdir.relative_to(folder).parts[:-1]]
+                if any(p.endswith(s) for p in parent_parts for s in REZIP_SUFFIXES):
                     continue
                 inner_files = [f for f in xdir.rglob("*") if f.is_file() and f.name not in SKIP_NAMES]
                 if not inner_files:

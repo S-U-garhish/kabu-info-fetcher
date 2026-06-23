@@ -376,8 +376,6 @@ def read_companies(path: Path) -> dict[str, Company]:
         if not name:
             raise EdinetError(f"{path}:{line_no}: 企業名が空です")
         companies[sec_code] = Company(raw_code, sec_code, output_code, name)
-    if not companies:
-        raise EdinetError(f"対象企業が1件もありません: {path}")
     return companies
 
 

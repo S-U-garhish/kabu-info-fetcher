@@ -1,9 +1,10 @@
 output/
 handoff/
+submit/
 companies.csv
 Edinetcode.zip
 .env
 __pycache__/
 *.pyc
 .test_*
-edinet_run.log
+*.log

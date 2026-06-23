@@ -147,6 +147,53 @@ python .\edinet_downloader.py download .\companies.csv --no-shareholder-docs
 
 初回の2025年以降バックフィルは、夜間に並列数1のまま実行する想定です。
 
+## 補完ツール
+
+### 漏れチェック（有報・半期）
+
+```powershell
+python .\check_missing.py .\companies_XXXX.csv
+```
+
+`missing_check_companies_XXXX.csv` に未取得企業・年度の一覧を出力します。
+
+### 漏れチェック（株主総会招集通知）
+
+```powershell
+python .\check_shareholder.py .\companies_XXXX.csv 2025
+```
+
+`missing_shareholder_companies_XXXX_2025.csv` に招集通知が見つからない企業の一覧を出力します。
+
+### 提出用ZIPの作成
+
+```powershell
+python .\make_submit_zip.py .\companies_XXXX.csv
+```
+
+`submit/companies_XXXX.zip` に企業フォルダーをまとめて梱包します。
+
+### 提出用ZIPの再梱包（_xbrl/_csv をZIP化）
+
+```powershell
+python .\rezip_submit.py .\companies_XXXX.csv
+```
+
+`_xbrl/` と `_csv/` ディレクトリをそれぞれ `_xbrl.zip` / `_csv.zip` に変換して梱包し直します。
+既存の `submit/companies_XXXX.zip` は `.orig.zip` にバックアップされます（既にある場合は元のZIPを削除）。
+
+### 書類一覧キャッシュの更新のみ
+
+企業をダウンロードせずに特定日付の書類一覧キャッシュだけを更新したい場合は、
+`companies_empty.csv`（ヘッダー行のみ）と `--refresh-lists` を組み合わせます。
+
+```powershell
+python .\edinet_downloader.py download .\companies_empty.csv `
+  --start 2026-06-20 --end 2026-06-23 --refresh-lists
+```
+
+その後、実際の企業CSVで再実行すると夕方追加分が拾われます。
+
 ## 途中成果を報告・引き継ぐ
 
 ダウンローダーを動かしたままでも、その時点で完成しているファイルだけをZIP化できます。
